@@ -7,4 +7,5 @@ tasks.jar {
 }
 
 dependencies {
+    implementation("com.querydsl:querydsl-jpa:5.1.0:jakarta")
 }
