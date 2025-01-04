@@ -42,3 +42,27 @@ subprojects {
 		useJUnitPlatform()
 	}
 }
+
+project(":presentation") {
+	dependencies {
+		implementation(project(":core"))
+	}
+}
+
+project(":infrastructure") {
+	dependencies {
+		implementation(project(":core"))
+	}
+}
+
+project(":application") {
+	dependencies {
+		implementation(project(":core"))
+	}
+}
+
+project(":domain") {
+	dependencies {
+		implementation(project(":core"))
+	}
+}

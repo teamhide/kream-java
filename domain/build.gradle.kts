@@ -1,7 +1,3 @@
-plugins {
-    id("java")
-}
-
 tasks.bootJar {
     enabled = false
 }
