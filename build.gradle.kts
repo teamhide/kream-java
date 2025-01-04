@@ -4,6 +4,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.7"
 	id("com.diffplug.spotless") version "6.20.0"
 	id("jacoco")
+	id("io.freefair.lombok") version "8.11"
 }
 
 java {
@@ -27,6 +28,7 @@ subprojects {
 	apply(plugin = "org.springframework.boot")
 	apply(plugin = "com.diffplug.spotless")
 	apply(plugin = "jacoco")
+	apply(plugin = "io.freefair.lombok")
 
 	dependencies {
 		implementation("org.flywaydb:flyway-core")
