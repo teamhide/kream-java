@@ -3,6 +3,7 @@ plugins {
 	id("org.springframework.boot") version "3.4.1"
 	id("io.spring.dependency-management") version "1.1.7"
 	id("com.diffplug.spotless") version "6.20.0"
+	id("jacoco")
 }
 
 java {
@@ -25,6 +26,7 @@ subprojects {
 	apply(plugin = "io.spring.dependency-management")
 	apply(plugin = "org.springframework.boot")
 	apply(plugin = "com.diffplug.spotless")
+	apply(plugin = "jacoco")
 
 	dependencies {
 		implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -69,8 +71,59 @@ subprojects {
 		}
 	}
 
-	tasks.withType<Test> {
+	tasks.jacocoTestReport {
+		dependsOn(tasks.test)
+		reports {
+			html.required.set(true)
+			xml.required.set(true)
+			csv.required.set(false)
+		}
+		finalizedBy(tasks.jacocoTestCoverageVerification)
+		classDirectories.setFrom(
+			files(classDirectories.files.map {
+				fileTree(it) {
+					exclude(
+						"**/*Application*",
+						"**/Q*Entity*",
+					)
+				}
+			})
+		)
+	}
+
+	tasks.jacocoTestCoverageVerification {
+		val queryDslClasses = ('A'..'Z').map { "*.Q${it}*" }
+		violationRules {
+			rule {
+				element = "CLASS"
+				limit {
+					counter = "LINE"
+					value = "COVEREDRATIO"
+					minimum = "1.00".toBigDecimal()
+				}
+				classDirectories.setFrom(sourceSets.main.get().output.asFileTree)
+				excludes = listOf(
+					"com.teamhide.kream.KreamApplication",
+				) + queryDslClasses
+			}
+		}
+	}
+
+	val preSpotless by tasks.registering {
+		dependsOn("spotlessCheck", "spotlessApply")
+		finalizedBy(tasks.jacocoTestReport)
+	}
+
+	val testAll by tasks.registering {
+		dependsOn("spotlessCheck", "test", "jacocoTestReport", "jacocoTestCoverageVerification")
+		tasks["test"].mustRunAfter(tasks["spotlessCheck"])
+		tasks["jacocoTestReport"].mustRunAfter(tasks["test"])
+		tasks["jacocoTestCoverageVerification"].mustRunAfter(tasks["jacocoTestReport"])
+	}
+
+	tasks.test {
 		useJUnitPlatform()
+		systemProperties["spring.profiles.active"] = "test"
 	}
 }
 
