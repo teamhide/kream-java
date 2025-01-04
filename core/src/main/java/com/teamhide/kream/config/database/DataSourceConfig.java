@@ -1,6 +1,9 @@
 package com.teamhide.kream.config.database;
 
-import com.zaxxer.hikari.HikariDataSource;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -11,8 +14,7 @@ import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.sql.DataSource;
-import java.util.Map;
+import com.zaxxer.hikari.HikariDataSource;
 
 @Component
 @EnableTransactionManagement
@@ -33,13 +35,12 @@ public class DataSourceConfig {
     @DependsOn({"writerDataSource", "readerDataSource"})
     public DataSource routingDataSource(
             @Qualifier("writerDataSource") final DataSource writerDataSource,
-            @Qualifier("readerDataSource") final DataSource readerDataSource
-    ) {
+            @Qualifier("readerDataSource") final DataSource readerDataSource) {
         final RoutingDataSource routingDataSource = new RoutingDataSource();
-        final Map<Object, Object> dataSourceMap = Map.of(
-                DataSourceType.WRITER, writerDataSource,
-                DataSourceType.READER, readerDataSource
-        );
+        final Map<Object, Object> dataSourceMap =
+                Map.of(
+                        DataSourceType.WRITER, writerDataSource,
+                        DataSourceType.READER, readerDataSource);
         routingDataSource.setTargetDataSources(dataSourceMap);
         routingDataSource.setDefaultTargetDataSource(writerDataSource);
         return routingDataSource;
