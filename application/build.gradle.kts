@@ -7,4 +7,5 @@ tasks.jar {
 }
 
 dependencies {
+    implementation(project(":core"))
 }

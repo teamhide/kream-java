@@ -29,11 +29,6 @@ subprojects {
 	apply(plugin = "jacoco")
 
 	dependencies {
-		implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-		implementation("org.springframework.boot:spring-boot-starter-data-redis")
-		implementation("org.springframework.boot:spring-boot-starter-security")
-		implementation("org.springframework.boot:spring-boot-starter-validation")
-		implementation("org.springframework.boot:spring-boot-starter-web")
 		implementation("org.flywaydb:flyway-core")
 		implementation("org.flywaydb:flyway-mysql")
 		runtimeOnly("com.mysql:mysql-connector-j")
@@ -124,29 +119,5 @@ subprojects {
 	tasks.test {
 		useJUnitPlatform()
 		systemProperties["spring.profiles.active"] = "test"
-	}
-}
-
-project(":presentation") {
-	dependencies {
-		implementation(project(":core"))
-	}
-}
-
-project(":infrastructure") {
-	dependencies {
-		implementation(project(":core"))
-	}
-}
-
-project(":application") {
-	dependencies {
-		implementation(project(":core"))
-	}
-}
-
-project(":domain") {
-	dependencies {
-		implementation(project(":core"))
 	}
 }
