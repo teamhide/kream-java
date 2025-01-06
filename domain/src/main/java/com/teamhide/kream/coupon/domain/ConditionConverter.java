@@ -1,26 +1,36 @@
 package com.teamhide.kream.coupon.domain;
 
+import org.springframework.stereotype.Component;
+
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Objects;
-
-import org.springframework.stereotype.Component;
+import java.util.function.Function;
 
 @Component
 public class ConditionConverter {
     private static final String PREFIX = "[";
     private static final String SUFFIX = "]";
+    private static final String TRUE_STRING = "true";
+    private static final String FALSE_STRING = "false";
+
+    private final EnumMap<ConditionValueType, Function<String, Object>> typedHandler;
+
+    public ConditionConverter() {
+        this.typedHandler = new EnumMap<>(ConditionValueType.class);
+        this.typedHandler.put(ConditionValueType.BOOLEAN, this::toBooleanStrictOrNull);
+        this.typedHandler.put(ConditionValueType.LIST_LONG, this::toListOfInt);
+    }
 
     public <T> T getTypedValue(
             final String value, final ConditionValueType valueType, final Class<T> clazz) {
-        Object result;
-
-        switch (valueType) {
-            case BOOLEAN -> result = toBooleanStrictOrNull(value);
-            case LIST_LONG -> result = toListOfInt(value);
-            default -> throw new InvalidConditionTypeException();
+        final Function<String, Object> handler = typedHandler.get(valueType);
+        if (handler == null) {
+            throw new InvalidConditionTypeException();
         }
 
+        final Object result = handler.apply(value);
         if (!clazz.isInstance(result)) {
             throw new InvalidConditionTypeException();
         }
@@ -28,9 +38,9 @@ public class ConditionConverter {
     }
 
     private Boolean toBooleanStrictOrNull(final String value) {
-        if ("true".equalsIgnoreCase(value)) {
+        if (TRUE_STRING.equalsIgnoreCase(value)) {
             return true;
-        } else if ("false".equalsIgnoreCase(value)) {
+        } else if (FALSE_STRING.equalsIgnoreCase(value)) {
             return false;
         }
         return null;

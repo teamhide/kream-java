@@ -4,19 +4,13 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ConditionConverterTest {
-    private ConditionConverter conditionConverter;
-
-    @BeforeEach
-    void setUp() {
-        this.conditionConverter = new ConditionConverter();
-    }
+    private ConditionConverter conditionConverter = new ConditionConverter();
 
     @Test
     @DisplayName("ConditionValue를 ConditionValueType에 맞게 변환 요청하면 변환된 값이 리턴된다")
